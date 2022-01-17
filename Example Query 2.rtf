@@ -1,0 +1,34 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww18700\viewh19880\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \'97 Example of view calculating time series of balance (window function)\
+\
+	DROP VIEW IF EXISTS spouse2cumchecking;\
+	CREATE VIEW spouse2cumchecking AS\
+	SELECT \
+		TO_CHAR("Date", 'ww-yyyy') AS "Week", \
+		xxxxx + SUM(COALESCE((0-withdrawals),0)+COALESCE(deposits,0)) OVER (ORDER BY "Date") AS "Account Value"\
+	FROM spouse2checking\
+	ORDER BY "Date";\
+	SELECT * FROM spouse2cumchecking;\
+\
+\'97Combining views for export table. \
+	\
+	SELECT \
+		TO_DATE(spouse1cumchecking."Week", 'ww-yyyy') as "Date",\
+		ROUND(AVG(spouse1cumchecking."Account Value"),2) +\
+		COALESCE(ROUND(AVG(spouse2cumchecking."Account Value"),2),xxxxx)\
+			AS "Combined Checking"\
+	\
+	FROM spouse2cumchecking\
+\
+	FULL OUTER JOIN spouse1cumchecking\
+		ON  TO_DATE(spouse1cumchecking."Week", 'ww-yyyy') = TO_DATE(spouse2cumchecking."Week", 'ww-yyyy')\
+\
+	GROUP BY spouse1cumchecking."Week"\
+	ORDER BY TO_DATE(spouse1cumchecking."Week", 'ww-yyyy');\
+}

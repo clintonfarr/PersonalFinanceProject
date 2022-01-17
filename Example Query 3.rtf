@@ -1,0 +1,66 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww18700\viewh19880\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 SELECT \
+		TO_DATE(TO_CHAR(spouse1checking."Date", 'mm-yyyy'),'mm-yyyy') AS "Month", \
+		ROUND(AVG(posted_balance),2) AS "Spouse 1 Checking Balance",\
+		COALESCE(MAX(spouse2checking.balance),0) AS "Spouse 2 Checking",\
+		MAX(savingsaccount.loan_balance) AS "Savings Balance",\
+		MAX(emergencyfundbalance.Balance) AS "Emergency Fund",\
+		COALESCE(MAX(spouse1retirement.loan_balance),0) AS "Spouse 1 Retirement",\
+		COALESCE(MAX(vanguardinvestments.ending_balance),0) AS "Vanguard Investments",\
+		COALESCE(MAX(spouse2retirement.Balance),0) AS "Spouse 2 Retirement",\
+		0 - COALESCE(MAX(spouse2carloan."Balance"),0) AS "Spouse 2 Car Loan",\
+		0 - COALESCE(MAX(studentloans.loan_balance), xxxxxx) AS "Student Loans",\
+\
+		ROUND(AVG(posted_balance) \
+			+ MAX(savingsaccount.loan_balance)\
+			- COALESCE(MAX(studentloans.loan_balance),xxxxx)\
+			+ COALESCE(MAX(spouse1retirement.loan_balance),0)\
+			+ COALESCE(MAX(vanguardinvestments.ending_balance),0)\
+			+ MAX(emergencyfundbalance.Balance)\
+			- COALESCE(MAX(spouse2carloan."Balance"),0)\
+			+ COALESCE(MAX(spouse2retirement.Balance),0)\
+			+ COALESCE(MAX(spouse2checking.balance),0)\
+		,2) AS "Net Worth"\
+\
+		FROM spouse1checking\
+\
+		FULL OUTER JOIN savingsaccount\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= TO_CHAR(savingsaccount."Date", 'mm-yyyy')\
+\
+		FULL OUTER JOIN studentloans\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= TO_CHAR(studentloans."Date", 'mm-yyyy')\
+\
+		FULL OUTER JOIN spouse1retirement\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= TO_CHAR(spouse1retirement."Date", 'mm-yyyy')\
+\
+		FULL OUTER JOIN vanguardinvestments\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= TO_CHAR(vanguardinvestments."Date", 'mm-yyyy')\
+\
+		FULL OUTER JOIN emergencyfundbalance\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= emergencyfundbalance."Date"\
+\
+		FULL OUTER JOIN spouse2carloan\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= TO_CHAR(spouse2carloan."Date", 'mm-yyyy')\
+\
+		FULL OUTER JOIN spouse2retirement\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= TO_CHAR(spouse2retirement."Date", 'mm-yyyy')\
+\
+		FULL OUTER JOIN spouse2checking\
+		ON TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+				= TO_CHAR(spouse2checking."Date", 'mm-yyyy')\
+\
+	GROUP BY TO_CHAR(spouse1checking."Date", 'mm-yyyy')\
+	ORDER BY TO_DATE(TO_CHAR(spouse1checking."Date", 'mm-yyyy'),'mm-yyyy');}
